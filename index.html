@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gemini 2.0 Chatbot</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    #chatbox { background: white; padding: 10px; height: 400px; overflow-y: auto; border: 1px solid #ccc; }
+    .message { margin: 10px 0; }
+    .user { color: blue; }
+    .bot { color: green; }
+  </style>
+</head>
+<body>
+  <h2>💬 Real-time Gemini 2.0 Chatbot</h2>
+  <div id="chatbox"></div>
+  <input type="text" id="msg" placeholder="Type your message..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("msg");
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage("You", message, "user");
+      input.value = "";
+
+      const res = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+      appendMessage("Bot", data.reply, "bot");
+    }
+
+    function appendMessage(sender, text, className) {
+      const chatbox = document.getElementById("chatbox");
+      const div = document.createElement("div");
+      div.className = "message " + className;
+      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatbox.appendChild(div);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
